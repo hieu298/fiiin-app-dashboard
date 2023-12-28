@@ -1,51 +1,65 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022)
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
+from pathlib import Path
+import json
 import streamlit as st
-from streamlit.logger import get_logger
+from streamlit_lottie import st_lottie
+from streamlit_extras.let_it_rain import rain
+import streamlit as st
+import pandas as pd
+import plotly.graph_objects as go
+import plotly.express as px
+import numpy as np
+from vnstock import * #import all functions, including functions that provide OHLC data for charting
+from vnstock.chart import *
+from datetime import datetime, timedelta
+from vnstock import * #import all functions
+from tvDatafeed import TvDatafeed, Interval
+from vnstock_data.trading_insights import *
+from vnstock_data.ohlc import *
+from plotly.subplots import make_subplots
+st.set_page_config(layout="wide")
 
-LOGGER = get_logger(__name__)
-
-
-def run():
-    st.set_page_config(
-        page_title="Hello",
-        page_icon="👋",
-    )
-
-    st.write("# Welcome to Streamlit! 👋")
-
-    st.sidebar.success("Select a demo above.")
-
-    st.markdown(
-        """
-        Streamlit is an open-source app framework built specifically for
-        Machine Learning and Data Science projects.
-        **👈 Select a demo from the sidebar** to see some examples
-        of what Streamlit can do!
-        ### Want to learn more?
-        - Check out [streamlit.io](https://streamlit.io)
-        - Jump into our [documentation](https://docs.streamlit.io)
-        - Ask a question in our [community
-          forums](https://discuss.streamlit.io)
-        ### See more complex demos
-        - Use a neural net to [analyze the Udacity Self-driving Car Image
-          Dataset](https://github.com/streamlit/demo-self-driving)
-        - Explore a [New York City rideshare dataset](https://github.com/streamlit/demo-uber-nyc-pickups)
-    """
-    )
+# Directories and file paths
+THIS_DIR = Path(__file__).parent
+CSS_FILE = THIS_DIR / "style" / "style.css"
+ASSETS = THIS_DIR / "assets"
+LOTTIE_ANIMATION = ASSETS / "animation_holiday.json"
 
 
-if __name__ == "__main__":
-    run()
+# Function to load and display the Lottie animation
+def load_lottie_animation(file_path):
+    with open(file_path, "r") as f:
+        return json.load(f)
+
+
+# Function to apply snowfall effect
+def run_snow_animation():
+    rain(emoji="⚽", font_size=20, falling_speed=8, animation_length="infinite")
+
+
+# Function to get the name from query parameters
+def get_person_name():
+    query_params = st.experimental_get_query_params()
+    return query_params.get("name", ["Friend"])[0]
+
+
+# Page configuration")
+
+# Run snowfall animation
+run_snow_animation()
+
+# Apply custom CSS
+with open(CSS_FILE) as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+# Display header with personalized name
+PERSON_NAME = get_person_name()
+st.header(f"Happy Holidays, {PERSON_NAME}! 🎄", anchor=False)
+
+# Display the Lottie animation
+lottie_animation = load_lottie_animation(LOTTIE_ANIMATION)
+st_lottie(lottie_animation, key="lottie-holiday", height=300)
+
+# Personalized holiday message
+st.markdown(
+    f"Dear {PERSON_NAME}, wishing you a wonderful holiday season filled with joy and peace. 🌟"
+)
